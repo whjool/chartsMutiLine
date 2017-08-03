@@ -55,34 +55,42 @@ static CGFloat bounceY = 20;
     /*******画出坐标轴********/
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSetLineWidth(context, 1.0);
-    CGContextSetRGBStrokeColor(context, 1, 0, 0, 1);//坐标轴背景颜色
+    CGContextSetRGBStrokeColor(context, 0, 0, 0, 1);//坐标轴背景颜色
     CGContextMoveToPoint(context, bounceX, bounceY);                        //原点
     CGContextAddLineToPoint(context, bounceX, rect.size.height - bounceY);  //Y
-    CGContextAddLineToPoint(context,rect.size.width -  bounceX, rect.size.height - bounceY);//X轴
-    CGContextMoveToPoint(context, rect.size.width -  bounceX, bounceY);
-    CGContextAddLineToPoint(context,rect.size.width -  bounceX, rect.size.height - bounceY);//右侧Y轴
+    //获取最长的label的数据
+    UILabel * label1 = (UILabel*)[self viewWithTag:1000 + self.columCount- 1];
+    CGFloat centerX = label1.frame.origin.x;
+    CGContextAddLineToPoint(context,centerX, rect.size.height - bounceY);//X轴
+    CGContextMoveToPoint(context, centerX , bounceY);
+    CGContextAddLineToPoint(context,centerX , rect.size.height - bounceY);//右侧Y轴
     CGContextStrokePath(context);
 }
 
 #pragma mark 添加横向虚线
 - (void)setHorLineDash{
 
+    //获取最长的label的数据
+    UILabel * label= (UILabel*)[self viewWithTag:1000 + self.columCount- 1];
+    CGFloat centerX = label.frame.origin.x;
     for (NSInteger i = 0;i <= self.rowCount; i++ ) {
-        
-        UILabel * label1 = (UILabel*)[self viewWithTag:2000 + i];
-        
-        UIBezierPath * path = [[UIBezierPath alloc]init];
-        [path moveToPoint:CGPointMake(0, label1.frame.origin.y - bounceY)];
-        [path addLineToPoint:CGPointMake(self.frame.size.width - 2*bounceX,label1.frame.origin.y - bounceY)];
-        
-        CAShapeLayer * dashLayer = [CAShapeLayer layer];
-        dashLayer.strokeColor = [UIColor blackColor].CGColor;
-        dashLayer.fillColor = [UIColor clearColor].CGColor;
-        dashLayer.lineWidth = 0.6;
-        dashLayer.path = path.CGPath;
-        NSArray *dash = @[@3,@2];
-        dashLayer.lineDashPattern = dash;
-        [self.gradientLayer addSublayer:dashLayer];
+        if (i != self.rowCount)
+        {
+            UILabel * label1 = (UILabel*)[self viewWithTag:2000 + i];
+            
+            UIBezierPath * path = [[UIBezierPath alloc]init];
+            [path moveToPoint:CGPointMake(0, label1.frame.origin.y - bounceY)];
+            [path addLineToPoint:CGPointMake(centerX - bounceX,label1.frame.origin.y - bounceY)];
+            
+            CAShapeLayer * dashLayer = [CAShapeLayer layer];
+            dashLayer.strokeColor = [UIColor blackColor].CGColor;
+            dashLayer.fillColor = [UIColor clearColor].CGColor;
+            dashLayer.lineWidth = 0.6;
+            dashLayer.path = path.CGPath;
+            NSArray *dash = @[@3,@2];
+            dashLayer.lineDashPattern = dash;
+            [self.gradientLayer addSublayer:dashLayer];
+        }
     }
 }
 
@@ -116,18 +124,42 @@ static CGFloat bounceY = 20;
 
 #pragma mark 画折线图
 - (void)drawLine{
-    if (self.dataArray)
+    if (self.dataArray||self.dataRightArray)//分别绘制左边线和右边线条
     {
-        [self singleLine];
-    }else if (self.mutiDataArray)
-    {
-        [self multiLine];
+        if (self.dataArray) {
+            [self singleLeftLine];
+        }
+        
+        
+        
+        
+        
     }
    
 }
 
--(void)singleLine
+-(NSArray *)dataArrFromModelArr:(NSArray<NSNumber *> *)modelArr
 {
+    //横向数据
+    int row = self.rowCount;
+    CGFloat maxNum = modelArr[0].floatValue;
+    int total = modelArr.count;
+    int  i =1;
+    while (i== total)
+    {
+        if (maxNum<modelArr[total]) {
+            <#statements#>
+        }
+        i++;
+    }
+    
+    
+}
+
+-(void)singleLeftLine
+{
+    
+    //以下是创建绘图
     CGFloat maxValue = [self.yLeftDataArray[self.rowCount - 1] floatValue];
     
     UIBezierPath * path = [[UIBezierPath alloc]init];
@@ -171,61 +203,14 @@ static CGFloat bounceY = 20;
 
 }
 
-//多线条绘制
--(void)multiLine
-{
-    NSInteger totalNum = self.mutiDataArray.count;
-    CGFloat maxValue = [self.yLeftDataArray[self.rowCount - 2] floatValue];
-    
-//    while (<#condition#>)
-//    {
-//        <#statements#>
-//    }
-    
-    UIBezierPath * path = [[UIBezierPath alloc]init];
-    self.path1 = path;
-    //创建折现点标记
-    for (NSInteger i = 0; i< self.dataArray.count; i++) {
-        
-        UILabel * label = (UILabel*)[self viewWithTag:1000 + i];
-        CGFloat yValue = [self.dataArray[i] floatValue];
-        
-        CGFloat y = (maxValue - yValue) / maxValue * (self.frame.size.height - bounceY*2);
-        CGFloat x = label.frame.origin.x - bounceX;
-        if (i == 0) {
-            
-            [path moveToPoint:CGPointMake(x, y)];
-        }else {
-            
-            [path addLineToPoint:CGPointMake(x,  y)];
-        }
-        //        //拐点标注点
-        //        UILabel * falglabel = [[UILabel alloc]initWithFrame:CGRectMake(label.frame.origin.x , (maxValue -yValue) /maxValue * (self.frame.size.height - bounceY*2 )+ bounceY, 30, 15)];
-        //        if (yValue < [self.yLeftDataArray[0] floatValue]) {
-        //
-        //            falglabel.frame = CGRectMake(label.frame.origin.x, (maxValue -yValue) /maxValue * (self.frame.size.height - bounceY*2 )+ bounceY - 10, 30, 15);
-        //        }
-        //        falglabel.tag = 3000+ i;
-        //        falglabel.text = [NSString stringWithFormat:@"%.1f",yValue];
-        //        falglabel.font = [UIFont systemFontOfSize:8.0];
-        //        falglabel.textColor = [UIColor whiteColor];
-        //        [self addSubview:falglabel];
-    }
-    
-    self.lineChartLayer = [CAShapeLayer layer];
-    self.lineChartLayer.path = path.CGPath;
-    self.lineChartLayer.strokeColor = [UIColor blackColor].CGColor;
-    self.lineChartLayer.fillColor = [UIColor clearColor].CGColor;
-    self.lineChartLayer.lineCap = kCALineCapRound;
-    self.lineChartLayer.lineJoin = kCALineJoinRound;
-    self.lineChartLayer.lineWidth = 1.0;
-    [self.gradientLayer addSublayer:self.lineChartLayer];
-}
 #pragma mark 创建x轴的数据
 - (void)createLabelX {
     
     for (NSInteger i = 0; i < self.columCount; i++) {
-        UILabel * LabelMonth = [[UILabel alloc]initWithFrame:CGRectMake((self.frame.size.width - 2*bounceX)/self.columCount * i + bounceX, self.frame.size.height - bounceY + bounceY*0.3, (self.frame.size.width - 2*bounceX)/self.columCount- 2, bounceY/2)];
+        UILabel * LabelMonth = [[UILabel alloc]initWithFrame:
+                                CGRectMake((self.frame.size.width - 2*bounceX)/self.columCount * i + bounceX,
+                                                                        self.frame.size.height - bounceY + bounceY*0.3,
+                                           (self.frame.size.width - 2*bounceX)/self.columCount- 2, bounceY/2)];
         LabelMonth.tag = 1000 + i;
         LabelMonth.font = [UIFont systemFontOfSize:10];
 //        LabelMonth.transform = CGAffineTransformMakeRotation(M_PI * 0.1);//不做旋转
@@ -257,6 +242,7 @@ static CGFloat bounceY = 20;
             labelYdivision.text = @"11111";
         }else
             labelYdivision.text = [NSString stringWithFormat:@"%.1f",(self.rowCount - i)*100.0];
+        
         labelYdivision.font = [UIFont systemFontOfSize:10];
         [self addSubview:labelYdivision];
     }
@@ -275,6 +261,9 @@ static CGFloat bounceY = 20;
         UILabel *label = (UILabel *)[self viewWithTag:2000 + total - i];
         if (i != total) {
             label.text = yLeftDataArray[i];
+        }else
+        {
+            label.text = @"";
         }
         
     }

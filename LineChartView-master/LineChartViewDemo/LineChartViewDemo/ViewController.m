@@ -33,6 +33,11 @@
     _lineView = [[LineChartView alloc]initWithFrame:CGRectMake(0, 150, self.view.frame.size.width, 240) withColumCount:(int)xDataArray.count rowCount:(int)yDataArray.count];
     _lineView.xDataArray = xDataArray;
     _lineView.yLeftDataArray = yDataArray;
+    _lineView.xTitle = @"底部展示(元)";
+    _lineView.yLeftTitle = @"左边展示(元)";
+    
+    _lineView.yLeftDataArray = yDataArray;
+    _lineView.yRightTitle = @"右边展示(元)";
     //尝试采用两条线
     NSMutableArray *mutiArr = [@[] mutableCopy];
     for (int i = 0; i<3; i++)
