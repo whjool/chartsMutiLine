@@ -13,6 +13,7 @@
 #define RightLBTag 2500
 #define ChartYRate 1.2/2.0
 #define YCommonMargin 10
+#define XCommonMargin 20
 @interface LineChartView ()<CAAnimationDelegate>
 
 @property (nonatomic) int columCount;
@@ -317,7 +318,7 @@ static CGFloat bounceY = 60;
 
 #pragma mark 创建左边Y
 - (void)createLeftLabelY{
-    CGFloat marginX = YCommonMargin*2;
+    CGFloat marginX = XCommonMargin;
     CGFloat marginY = bounceY*ChartYRate;
     CGFloat totalH = self.frame.size.height - marginY - bounceY +YCommonMargin;
     CGFloat sperateH = (totalH)/self.rowCount;
@@ -361,13 +362,16 @@ static CGFloat bounceY = 60;
 
 - (void)createRightLabelY
 {
+//    CGFloat marginX = (self.frame.size.width - 2*bounceX)+bounceX/2.0;
+    CGFloat marginX = self.frame.size.width - 2*bounceX +1.5*XCommonMargin;
     CGFloat marginY = bounceY*ChartYRate;
     CGFloat totalH = self.frame.size.height - marginY - bounceY +YCommonMargin;
     CGFloat sperateH = (totalH)/self.rowCount;
     //创建右边的Y
     for (NSInteger i = 0; i <= self.rowCount; i++) {
         
-        UILabel * labelYdivision = [[UILabel alloc]initWithFrame:CGRectMake((self.frame.size.width - 2*bounceX)+bounceX/2.0,
+        UILabel * labelYdivision = [[UILabel alloc]initWithFrame:CGRectMake(
+                                                                            marginX,
                                                                             sperateH *i + marginY,
                                                                             bounceX, bounceY/2.0)];
         labelYdivision.tag = RightLBTag + i;
