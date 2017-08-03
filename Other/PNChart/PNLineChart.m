@@ -804,17 +804,23 @@ andProgressLinePathsColors:(NSMutableArray *)progressLinePathsColors {
         CGContextAddLineToPoint(ctx, xAxisWidth, yAxisHeight);
         CGContextStrokePath(ctx);
 
-        // draw y axis arrow
-        CGContextMoveToPoint(ctx, _chartMarginBottom + yAxisOffset - 3, 6);
-        CGContextAddLineToPoint(ctx, _chartMarginBottom + yAxisOffset, 0);
-        CGContextAddLineToPoint(ctx, _chartMarginBottom + yAxisOffset + 3, 6);
-        CGContextStrokePath(ctx);
-
-        // draw x axis arrow
-        CGContextMoveToPoint(ctx, xAxisWidth - 6, yAxisHeight - 3);
-        CGContextAddLineToPoint(ctx, xAxisWidth, yAxisHeight);
-        CGContextAddLineToPoint(ctx, xAxisWidth - 6, yAxisHeight + 3);
-        CGContextStrokePath(ctx);
+//        // draw y axis arrow 画左边箭头
+//        CGContextMoveToPoint(ctx, _chartMarginBottom + yAxisOffset - 3, 6);
+//        CGContextAddLineToPoint(ctx, _chartMarginBottom + yAxisOffset, 0);
+//        CGContextAddLineToPoint(ctx, _chartMarginBottom + yAxisOffset + 3, 6);
+//        CGContextStrokePath(ctx);
+//
+//        // draw x axis arrow
+//        CGContextMoveToPoint(ctx, xAxisWidth - 6, yAxisHeight - 3);
+//        CGContextAddLineToPoint(ctx, xAxisWidth, yAxisHeight);
+//        CGContextAddLineToPoint(ctx, xAxisWidth - 6, yAxisHeight + 3);
+//        CGContextStrokePath(ctx);
+//        
+//        // draw y axis arrow 画右边的线
+//        CGContextMoveToPoint(ctx, xAxisWidth - 6, 6);
+//        CGContextAddLineToPoint(ctx, _chartMarginBottom + yAxisOffset, 0);
+//        CGContextAddLineToPoint(ctx, _chartMarginBottom + yAxisOffset + 3, 6);
+//        CGContextStrokePath(ctx);
 
         if (self.showLabel) {
 
