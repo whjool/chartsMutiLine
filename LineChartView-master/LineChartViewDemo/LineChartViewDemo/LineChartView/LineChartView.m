@@ -189,6 +189,7 @@ static CGFloat bounceY = 60;
     
 }
 
+//绘画以左边为基准的折线
 -(void)singleLeftLine
 {
     
@@ -197,6 +198,7 @@ static CGFloat bounceY = 60;
     
     UIBezierPath * path = [[UIBezierPath alloc]init];
     self.path1 = path;
+    /*
     //创建折现点标记
     for (NSInteger i = 0; i< self.dataArray.count; i++) {
         
@@ -233,6 +235,7 @@ static CGFloat bounceY = 60;
     self.lineChartLayer.lineJoin = kCALineJoinRound;
     self.lineChartLayer.lineWidth = 1.0;
     [self.gradientLayer addSublayer:self.lineChartLayer];
+     */
 
 }
 
@@ -314,15 +317,16 @@ static CGFloat bounceY = 60;
 
 #pragma mark 创建左边Y
 - (void)createLeftLabelY{
+    CGFloat marginX = YCommonMargin*2;
     CGFloat marginY = bounceY*ChartYRate;
     CGFloat totalH = self.frame.size.height - marginY - bounceY +YCommonMargin;
     CGFloat sperateH = (totalH)/self.rowCount;
     
     for (NSInteger i = 0; i <= self.rowCount; i++) {
         
-        UILabel * labelYdivision = [[UILabel alloc]initWithFrame:CGRectMake(0,
-                                                                            sperateH *i + marginY,
-                                                                            bounceX, bounceY/2.0)];
+        UILabel * labelYdivision = [[UILabel alloc]initWithFrame:CGRectMake(marginX,
+                                                                            sperateH*i  + marginY,
+                                                                            bounceX, marginY/2.0)];
         labelYdivision.tag = LeftLBTag + i;
         labelYdivision.textAlignment = NSTextAlignmentCenter;
         labelYdivision.text = [NSString stringWithFormat:@"%.1f",(self.rowCount - i)*100.0];
