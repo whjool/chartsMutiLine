@@ -8,6 +8,8 @@
 
 #import "LineChartView.h"
 
+#define LeftLBTag 2000
+#define RightLBTag 2500
 @interface LineChartView ()<CAAnimationDelegate>
 
 @property (nonatomic) int columCount;
@@ -23,14 +25,22 @@
 /** 颜色数组 */
 @property (nonatomic, strong) NSMutableArray *gradientLayerColors;
 
+
+@property(nonatomic,strong)UILabel *xTitleLB ;              //x轴的LB
+@property(nonatomic,strong)UILabel *yLeftTitleLB ;          //左边y轴的LB
+@property(nonatomic,strong)UILabel *yRightTitleLB ;         //右边y轴的LB
+
 @end
 
 @implementation LineChartView
 
-static CGFloat bounceX = 30;
+static CGFloat bounceX = 50;
 static CGFloat bounceY = 20;
 
-- (instancetype)initWithFrame:(CGRect)frame withColumCount:(int)columCount rowCount:(int)rowCount {
+- (instancetype)initWithFrame:(CGRect)frame
+               withColumCount:(int)columCount
+                     rowCount:(int)rowCount
+{
     
     if (self = [super initWithFrame:frame]) {
 
@@ -39,10 +49,11 @@ static CGFloat bounceY = 20;
         self.rowCount = rowCount;   //横向的数据
         
         [self createLabelX];
-        [self createLabelY];
+        [self createLeftLabelY];    //创建左边数据!
+        [self createRightLabelY];   //创建右边数据!
         [self drawGradientLayer];
         [self setHorLineDash];  //横向虚线绘制
-        [self setVerLineDash];  //
+        [self setVerLineDash];  //纵向数据绘制
         
     }
     return self;
@@ -76,7 +87,7 @@ static CGFloat bounceY = 20;
     for (NSInteger i = 0;i <= self.rowCount; i++ ) {
         if (i != self.rowCount)
         {
-            UILabel * label1 = (UILabel*)[self viewWithTag:2000 + i];
+            UILabel * label1 = (UILabel*)[self viewWithTag:LeftLBTag + i];
             
             UIBezierPath * path = [[UIBezierPath alloc]init];
             [path moveToPoint:CGPointMake(0, label1.frame.origin.y - bounceY)];
@@ -138,21 +149,37 @@ static CGFloat bounceY = 20;
    
 }
 
+//根据传入的最大值进行分组值
 -(NSArray *)dataArrFromModelArr:(NSArray<NSNumber *> *)modelArr
 {
     //横向数据
-    int row = self.rowCount;
+    NSInteger row = self.rowCount;
     CGFloat maxNum = modelArr[0].floatValue;
-    int total = modelArr.count;
-    int  i =1;
+    NSInteger total = modelArr.count;
+    NSInteger  i =1;
     while (i== total)
     {
-        if (maxNum<modelArr[total]) {
-            <#statements#>
+        if (maxNum<modelArr[i].floatValue)
+        {
+            maxNum = modelArr[i].floatValue;
         }
         i++;
     }
-    
+    //这里就可以获得区间 0 - maxValue
+    NSMutableArray *mewArr = [@[] mutableCopy];
+    CGFloat speraValue = maxNum/(row*1.0);
+    for (NSInteger j = 0; j<row; j++)
+    {
+        if (j == row - 1)
+        {
+            [mewArr addObject:@(maxNum)];
+            //用最大的值!
+//            [mewArr addObject:[NSString stringWithFormat:@"%.1f",maxNum]];
+        }else
+            [mewArr addObject:@(speraValue * j)];
+//            [mewArr addObject:[NSString stringWithFormat:@"%.1f",speraValue]];
+    }
+    return mewArr;
     
 }
 
@@ -218,6 +245,14 @@ static CGFloat bounceY = 20;
     }
 }
 
+-(void)setXTitle:(NSString *)xTitle
+{
+    _xTitle = xTitle;
+    
+    self.xTitleLB.text = xTitle;
+
+}
+
 - (void)setXDataArray:(NSArray<NSString *> *)xDataArray {
 
     _xDataArray = [xDataArray copy];
@@ -229,13 +264,15 @@ static CGFloat bounceY = 20;
     }
 }
 
-#pragma mark 创建y轴数据
-- (void)createLabelY{
+#pragma mark - 创建y轴数据
+
+#pragma mark 创建左边Y
+- (void)createLeftLabelY{
     
     for (NSInteger i = 0; i <= self.rowCount; i++) {
         
         UILabel * labelYdivision = [[UILabel alloc]initWithFrame:CGRectMake(0, (self.frame.size.height - 2 * bounceY)/self.rowCount *i + bounceY, bounceX, bounceY/2.0)];
-        labelYdivision.tag = 2000 + i;
+        labelYdivision.tag = LeftLBTag + i;
         labelYdivision.textAlignment = NSTextAlignmentCenter;
         if (i == self.rowCount)
         {
@@ -258,7 +295,7 @@ static CGFloat bounceY = 20;
     int total = self.rowCount;
     for (int i = total ; i >= 0; i --) {
         
-        UILabel *label = (UILabel *)[self viewWithTag:2000 + total - i];
+        UILabel *label = (UILabel *)[self viewWithTag:LeftLBTag + total - i];
         if (i != total) {
             label.text = yLeftDataArray[i];
         }else
@@ -269,9 +306,46 @@ static CGFloat bounceY = 20;
     }
 }
 
--(void)setYRightDataArray:(NSArray<NSString *> *)yRightDataArray
+#pragma mark - 创建右边Y
+
+- (void)createRightLabelY
 {
     
+    for (NSInteger i = 0; i <= self.rowCount; i++) {
+        
+        UILabel * labelYdivision = [[UILabel alloc]initWithFrame:CGRectMake((self.frame.size.width - 2*bounceX)+bounceX/2.0,
+                                                                            (self.frame.size.height - 2 * bounceY)/self.rowCount *i + bounceY,
+                                                                            bounceX, bounceY/2.0)];
+        labelYdivision.tag = RightLBTag + i;
+        labelYdivision.textAlignment = NSTextAlignmentCenter;
+//        if (i == self.rowCount)
+//        {
+//            labelYdivision.text = @"11111";
+//        }else
+            labelYdivision.text = [NSString stringWithFormat:@"%.1f",(self.rowCount - i)*100.0];
+        
+        labelYdivision.font = [UIFont systemFontOfSize:10];
+        [self addSubview:labelYdivision];
+    }
+}
+
+-(void)setYRightDataArray:(NSArray<NSString *> *)yRightDataArray
+{
+    _yRightDataArray = [yRightDataArray copy];
+    
+    //由于最顶部需要
+    int total = self.rowCount;
+    for (int i = total ; i >= 0; i --) {
+        
+        UILabel *label = (UILabel *)[self viewWithTag:RightLBTag + total - i];
+        if (i != total) {
+            label.text = yRightDataArray[i];
+        }else
+        {
+            label.text = @"";
+        }
+        
+    }
 }
 
 #pragma mark 渐变的颜色
@@ -291,7 +365,8 @@ static CGFloat bounceY = 20;
     [self.layer addSublayer:self.gradientLayer];
 }
 
-- (void)resetDraw {
+- (void)resetDrawWithAnimate:(BOOL)isAnimate
+{
 
     if (self.lineChartLayer) {
         
@@ -303,16 +378,19 @@ static CGFloat bounceY = 20;
     }
     
     [self drawLine];
-    
-    CABasicAnimation *pathAnimation = [CABasicAnimation animationWithKeyPath:@"strokeEnd"];
-    pathAnimation.duration = 3;
-    pathAnimation.repeatCount = 1;
-    pathAnimation.removedOnCompletion = YES;
-    pathAnimation.fromValue = [NSNumber numberWithFloat:0.0f];
-    pathAnimation.toValue = [NSNumber numberWithFloat:1.0f];
-    // 设置动画代理，动画结束时添加一个标签，显示折线终点的信息
-    pathAnimation.delegate = self;
-    [self.lineChartLayer addAnimation:pathAnimation forKey:@"strokeEnd"];
+    if (isAnimate)
+    {
+        CABasicAnimation *pathAnimation = [CABasicAnimation animationWithKeyPath:@"strokeEnd"];
+        pathAnimation.duration = 1;
+        pathAnimation.repeatCount = 1;
+        pathAnimation.removedOnCompletion = YES;
+        pathAnimation.fromValue = [NSNumber numberWithFloat:0.0f];
+        pathAnimation.toValue = [NSNumber numberWithFloat:1.0f];
+        // 设置动画代理，动画结束时添加一个标签，显示折线终点的信息
+        pathAnimation.delegate = self;
+        [self.lineChartLayer addAnimation:pathAnimation forKey:@"strokeEnd"];
+
+    }
 }
 
 - (void)animationDidStart:(CAAnimation *)anim{
@@ -320,5 +398,45 @@ static CGFloat bounceY = 20;
 }
 - (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag{
     NSLog(@"停止~~~~~~~~");
+}
+
+#pragma mark - getter
+-(UILabel *)xTitleLB
+{
+    if (!_xTitleLB)
+    {
+        UILabel *label = [UILabel new];
+        label.font = [UIFont systemFontOfSize:10];
+        label.textColor = [UIColor blackColor];
+        [self addSubview:label];
+        _xTitleLB = label;
+    }
+    return _xTitleLB;
+}
+
+-(UILabel *)yLeftTitleLB
+{
+    if (!_yLeftTitleLB)
+    {
+        UILabel *label = [UILabel new];
+        label.font = [UIFont systemFontOfSize:10];
+        label.textColor = [UIColor blackColor];
+        [self addSubview:label];
+        _yLeftTitleLB = label;
+    }
+    return _yLeftTitleLB;
+}
+
+-(UILabel *)yRightTitleLB
+{
+    if (!_yRightTitleLB)
+    {
+        UILabel *label = [UILabel new];
+        label.font = [UIFont systemFontOfSize:10];
+        label.textColor = [UIColor blackColor];
+        [self addSubview:label];
+        _yRightTitleLB = label;
+    }
+    return _yRightTitleLB;
 }
 @end

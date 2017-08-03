@@ -25,6 +25,7 @@
 
 - (instancetype)initWithFrame:(CGRect)frame withColumCount:(int)columCount rowCount:(int)rowCount;
 
-- (void)resetDraw;
+//重新绘图!
+- (void)resetDrawWithAnimate:(BOOL)isAnimate;
 
 @end
