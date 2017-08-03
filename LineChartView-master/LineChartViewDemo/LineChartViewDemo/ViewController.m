@@ -30,7 +30,7 @@
     NSArray *xDataArray = dateArr;
 //    NSArray *xDataArray = @[@"周一",@"周二",@"周三",@"周四",@"周五",@"周六",@"周日"];
     NSArray *yDataArray = @[@"100",@"200",@"300",@"400",@"500",@"600",@"700",@"800"];
-    _lineView = [[LineChartView alloc]initWithFrame:CGRectMake(0, 150, self.view.frame.size.width, 240)
+    _lineView = [[LineChartView alloc]initWithFrame:CGRectMake(0, 150, self.view.frame.size.width, 280)
                                      withColumCount:(int)xDataArray.count
                                            rowCount:(int)yDataArray.count];
     _lineView.xDataArray = xDataArray;
