@@ -22,11 +22,30 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
-    NSArray *xDataArray = @[@"周一",@"周二",@"周三",@"周四",@"周五",@"周六",@"周日"];
+    NSMutableArray *dateArr = [@[] mutableCopy];
+    for (int i =1; i<=12; i++)
+    {
+        [dateArr addObject:[NSString stringWithFormat:@"%d",i]];
+    }
+    NSArray *xDataArray = dateArr;
+//    NSArray *xDataArray = @[@"周一",@"周二",@"周三",@"周四",@"周五",@"周六",@"周日"];
     NSArray *yDataArray = @[@"100",@"200",@"300",@"400",@"500",@"600",@"700",@"800"];
     _lineView = [[LineChartView alloc]initWithFrame:CGRectMake(0, 150, self.view.frame.size.width, 240) withColumCount:(int)xDataArray.count rowCount:(int)yDataArray.count];
     _lineView.xDataArray = xDataArray;
-    _lineView.yDataArray = yDataArray;
+    _lineView.yLeftDataArray = yDataArray;
+    //尝试采用两条线
+    NSMutableArray *mutiArr = [@[] mutableCopy];
+    for (int i = 0; i<3; i++)
+    {
+        NSMutableArray *itemArr = [@[] mutableCopy];
+        for (int i =0; i<12; i++)
+        {
+            [itemArr addObject:@(arc4random_uniform(650))];
+        }
+        [mutiArr addObject:itemArr];
+    }
+//    _lineView.dataArray = mutiArr;
+    
     _lineView.dataArray = @[@(69),@(376),@(500),@(789),@(456),@(650),@(310)];
     
     [self.view addSubview:_lineView];

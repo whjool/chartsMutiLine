@@ -15,6 +15,7 @@
 
 @property (nonatomic, strong) CAShapeLayer *lineChartLayer;
 @property (nonatomic, strong) UIBezierPath * path1;
+@property (nonatomic, strong) NSArray<UIBezierPath *> * pathArr;//贝瑟尔曲线数组
 /** 渐变背景视图 */
 @property (nonatomic, strong) UIView *gradientBackgroundView;
 /** 渐变图层 */
@@ -47,22 +48,26 @@ static CGFloat bounceY = 20;
     return self;
 }
 
-- (void)drawRect:(CGRect)rect{
+//坐标轴
+- (void)drawRect:(CGRect)rect
+{
     
     /*******画出坐标轴********/
     CGContextRef context = UIGraphicsGetCurrentContext();
-    CGContextSetLineWidth(context, 2.0);
-    CGContextSetRGBStrokeColor(context, 1, 0, 0, 1);
-    CGContextMoveToPoint(context, bounceX, bounceY);
-    CGContextAddLineToPoint(context, bounceX, rect.size.height - bounceY);
-    CGContextAddLineToPoint(context,rect.size.width -  bounceX, rect.size.height - bounceY);
+    CGContextSetLineWidth(context, 1.0);
+    CGContextSetRGBStrokeColor(context, 1, 0, 0, 1);//坐标轴背景颜色
+    CGContextMoveToPoint(context, bounceX, bounceY);                        //原点
+    CGContextAddLineToPoint(context, bounceX, rect.size.height - bounceY);  //Y
+    CGContextAddLineToPoint(context,rect.size.width -  bounceX, rect.size.height - bounceY);//X轴
+    CGContextMoveToPoint(context, rect.size.width -  bounceX, bounceY);
+    CGContextAddLineToPoint(context,rect.size.width -  bounceX, rect.size.height - bounceY);//右侧Y轴
     CGContextStrokePath(context);
 }
 
 #pragma mark 添加横向虚线
 - (void)setHorLineDash{
 
-    for (NSInteger i = 1;i < self.rowCount; i++ ) {
+    for (NSInteger i = 1;i <= self.rowCount+3; i++ ) {
         
         UILabel * label1 = (UILabel*)[self viewWithTag:2000 + i];
         
@@ -71,7 +76,7 @@ static CGFloat bounceY = 20;
         [path addLineToPoint:CGPointMake(self.frame.size.width - 2*bounceX,label1.frame.origin.y - bounceY)];
         
         CAShapeLayer * dashLayer = [CAShapeLayer layer];
-        dashLayer.strokeColor = [UIColor whiteColor].CGColor;
+        dashLayer.strokeColor = [UIColor blackColor].CGColor;
         dashLayer.fillColor = [UIColor clearColor].CGColor;
         dashLayer.lineWidth = 0.6;
         dashLayer.path = path.CGPath;
@@ -93,7 +98,7 @@ static CGFloat bounceY = 20;
         [path addLineToPoint:CGPointMake(label1.frame.origin.x - bounceX,self.frame.size.height - 2*bounceY)];
         
         CAShapeLayer * dashLayer = [CAShapeLayer layer];
-        dashLayer.strokeColor = [UIColor whiteColor].CGColor;
+        dashLayer.strokeColor = [UIColor yellowColor].CGColor;
         dashLayer.fillColor = [[UIColor clearColor] CGColor];
         // 默认设置路径宽度为0，使其在起始状态下不显示
         dashLayer.lineWidth = 0.6;
@@ -106,8 +111,19 @@ static CGFloat bounceY = 20;
 
 #pragma mark 画折线图
 - (void)drawLine{
-    
-    CGFloat maxValue = [self.yDataArray[self.rowCount - 1] floatValue];
+    if (self.dataArray)
+    {
+        [self singleLine];
+    }else if (self.mutiDataArray)
+    {
+        [self multiLine];
+    }
+   
+}
+
+-(void)singleLine
+{
+    CGFloat maxValue = [self.yLeftDataArray[self.rowCount - 1] floatValue];
     
     UIBezierPath * path = [[UIBezierPath alloc]init];
     self.path1 = path;
@@ -126,28 +142,79 @@ static CGFloat bounceY = 20;
             
             [path addLineToPoint:CGPointMake(x,  y)];
         }
-        //tianjia
-        UILabel * falglabel = [[UILabel alloc]initWithFrame:CGRectMake(label.frame.origin.x , (maxValue -yValue) /maxValue * (self.frame.size.height - bounceY*2 )+ bounceY, 30, 15)];
-        if (yValue < [self.yDataArray[0] floatValue]) {
-            
-            falglabel.frame = CGRectMake(label.frame.origin.x, (maxValue -yValue) /maxValue * (self.frame.size.height - bounceY*2 )+ bounceY - 10, 30, 15);
-        }
-        falglabel.tag = 3000+ i;
-        falglabel.text = [NSString stringWithFormat:@"%.1f",yValue];
-        falglabel.font = [UIFont systemFontOfSize:8.0];
-        falglabel.textColor = [UIColor whiteColor];
-        [self addSubview:falglabel];
+        //        //拐点标注点
+        //        UILabel * falglabel = [[UILabel alloc]initWithFrame:CGRectMake(label.frame.origin.x , (maxValue -yValue) /maxValue * (self.frame.size.height - bounceY*2 )+ bounceY, 30, 15)];
+        //        if (yValue < [self.yLeftDataArray[0] floatValue]) {
+        //
+        //            falglabel.frame = CGRectMake(label.frame.origin.x, (maxValue -yValue) /maxValue * (self.frame.size.height - bounceY*2 )+ bounceY - 10, 30, 15);
+        //        }
+        //        falglabel.tag = 3000+ i;
+        //        falglabel.text = [NSString stringWithFormat:@"%.1f",yValue];
+        //        falglabel.font = [UIFont systemFontOfSize:8.0];
+        //        falglabel.textColor = [UIColor whiteColor];
+        //        [self addSubview:falglabel];
     }
     
     self.lineChartLayer = [CAShapeLayer layer];
     self.lineChartLayer.path = path.CGPath;
-    self.lineChartLayer.strokeColor = [UIColor whiteColor].CGColor;
+    self.lineChartLayer.strokeColor = [UIColor blackColor].CGColor;
     self.lineChartLayer.fillColor = [UIColor clearColor].CGColor;
     self.lineChartLayer.lineCap = kCALineCapRound;
     self.lineChartLayer.lineJoin = kCALineJoinRound;
     self.lineChartLayer.lineWidth = 1.0;
     [self.gradientLayer addSublayer:self.lineChartLayer];
 
+}
+
+//多线条绘制
+-(void)multiLine
+{
+    NSInteger totalNum = self.mutiDataArray.count;
+    CGFloat maxValue = [self.yLeftDataArray[self.rowCount - 2] floatValue];
+    
+//    while (<#condition#>)
+//    {
+//        <#statements#>
+//    }
+    
+    UIBezierPath * path = [[UIBezierPath alloc]init];
+    self.path1 = path;
+    //创建折现点标记
+    for (NSInteger i = 0; i< self.dataArray.count; i++) {
+        
+        UILabel * label = (UILabel*)[self viewWithTag:1000 + i];
+        CGFloat yValue = [self.dataArray[i] floatValue];
+        
+        CGFloat y = (maxValue - yValue) / maxValue * (self.frame.size.height - bounceY*2);
+        CGFloat x = label.frame.origin.x - bounceX;
+        if (i == 0) {
+            
+            [path moveToPoint:CGPointMake(x, y)];
+        }else {
+            
+            [path addLineToPoint:CGPointMake(x,  y)];
+        }
+        //        //拐点标注点
+        //        UILabel * falglabel = [[UILabel alloc]initWithFrame:CGRectMake(label.frame.origin.x , (maxValue -yValue) /maxValue * (self.frame.size.height - bounceY*2 )+ bounceY, 30, 15)];
+        //        if (yValue < [self.yLeftDataArray[0] floatValue]) {
+        //
+        //            falglabel.frame = CGRectMake(label.frame.origin.x, (maxValue -yValue) /maxValue * (self.frame.size.height - bounceY*2 )+ bounceY - 10, 30, 15);
+        //        }
+        //        falglabel.tag = 3000+ i;
+        //        falglabel.text = [NSString stringWithFormat:@"%.1f",yValue];
+        //        falglabel.font = [UIFont systemFontOfSize:8.0];
+        //        falglabel.textColor = [UIColor whiteColor];
+        //        [self addSubview:falglabel];
+    }
+    
+    self.lineChartLayer = [CAShapeLayer layer];
+    self.lineChartLayer.path = path.CGPath;
+    self.lineChartLayer.strokeColor = [UIColor blackColor].CGColor;
+    self.lineChartLayer.fillColor = [UIColor clearColor].CGColor;
+    self.lineChartLayer.lineCap = kCALineCapRound;
+    self.lineChartLayer.lineJoin = kCALineJoinRound;
+    self.lineChartLayer.lineWidth = 1.0;
+    [self.gradientLayer addSublayer:self.lineChartLayer];
 }
 #pragma mark 创建x轴的数据
 - (void)createLabelX {
@@ -175,42 +242,51 @@ static CGFloat bounceY = 20;
 #pragma mark 创建y轴数据
 - (void)createLabelY{
     
-    for (NSInteger i = 0; i < self.rowCount; i++) {
+    for (NSInteger i = 0; i <= self.rowCount; i++) {
         
         UILabel * labelYdivision = [[UILabel alloc]initWithFrame:CGRectMake(0, (self.frame.size.height - 2 * bounceY)/self.rowCount *i + bounceY, bounceX, bounceY/2.0)];
         labelYdivision.tag = 2000 + i;
         labelYdivision.textAlignment = NSTextAlignmentCenter;
-        labelYdivision.text = [NSString stringWithFormat:@"%.1f",(self.rowCount - i)*100.0];
+        if (i == self.rowCount)
+        {
+            labelYdivision.text = @"";
+        }else
+            labelYdivision.text = [NSString stringWithFormat:@"%.1f",(self.rowCount - i)*100.0];
         labelYdivision.font = [UIFont systemFontOfSize:10];
         [self addSubview:labelYdivision];
     }
 }
 
-- (void)setYDataArray:(NSArray<NSString *> *)yDataArray {
+- (void)setyLeftDataArray:(NSArray<NSString *> *)yLeftDataArray {
 
-    _yDataArray = [yDataArray copy];
+    _yLeftDataArray = [yLeftDataArray copy];
     
-    for (int i = self.rowCount - 1; i >= 0; i --) {
+    //由于最顶部需要
+    int total = self.rowCount;
+    for (int i = total ; i >= 0; i --) {
         
-        UILabel *label = (UILabel *)[self viewWithTag:2000 + self.rowCount - 1 - i];
-        label.text = yDataArray[i];
+        UILabel *label = (UILabel *)[self viewWithTag:2000 + total - i];
+        if (i != total) {
+            label.text = yLeftDataArray[i];
+        }
+        
     }
 }
 
 #pragma mark 渐变的颜色
 - (void)drawGradientLayer {
- 
-    /** 创建并设置渐变背景图层（不包含坐标轴） */
+
+//    /** 创建并设置渐变背景图层（不包含坐标轴） */
     self.gradientLayer = [CAGradientLayer layer];
     self.gradientLayer.frame = CGRectMake(bounceX, bounceY, self.bounds.size.width - bounceX * 2, self.bounds.size.height - 2 * bounceY);
     [self.layer addSublayer:self.gradientLayer];
-    //设置渐变区域的起始和终止位置（范围为0-1），即渐变路径
-    self.gradientLayer.startPoint = CGPointMake(0, 0);
-    self.gradientLayer.endPoint = CGPointMake(1.0, 1.0);
-    //设置颜色的渐变过程
-    self.gradientLayerColors = [NSMutableArray arrayWithArray:@[(__bridge id)[UIColor colorWithRed:253 / 255.0 green:164 / 255.0 blue:8 / 255.0 alpha:1.0].CGColor, (__bridge id)[UIColor colorWithRed:251 / 255.0 green:37 / 255.0 blue:45 / 255.0 alpha:1.0].CGColor]];
-    self.gradientLayer.colors = self.gradientLayerColors;
-    //将CAGradientlayer对象添加在我们要设置背景图层layer
+//    //设置渐变区域的起始和终止位置（范围为0-1），即渐变路径
+//    self.gradientLayer.startPoint = CGPointMake(0, 0);
+//    self.gradientLayer.endPoint = CGPointMake(1.0, 1.0);
+//    //设置颜色的渐变过程
+//    self.gradientLayerColors = [NSMutableArray arrayWithArray:@[(__bridge id)[UIColor colorWithRed:253 / 255.0 green:164 / 255.0 blue:8 / 255.0 alpha:1.0].CGColor, (__bridge id)[UIColor colorWithRed:251 / 255.0 green:37 / 255.0 blue:45 / 255.0 alpha:1.0].CGColor]];
+//    self.gradientLayer.colors = self.gradientLayerColors;
+//    //将CAGradientlayer对象添加在我们要设置背景图层layer
     [self.layer addSublayer:self.gradientLayer];
 }
 
