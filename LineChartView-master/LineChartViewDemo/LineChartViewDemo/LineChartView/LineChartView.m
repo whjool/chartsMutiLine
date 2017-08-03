@@ -26,10 +26,6 @@
 @property (nonatomic, strong) NSMutableArray *gradientLayerColors;
 
 
-@property(nonatomic,strong)UILabel *xTitleLB ;              //x轴的LB
-@property(nonatomic,strong)UILabel *yLeftTitleLB ;          //左边y轴的LB
-@property(nonatomic,strong)UILabel *yRightTitleLB ;         //右边y轴的LB
-
 @end
 
 @implementation LineChartView
@@ -249,9 +245,49 @@ static CGFloat bounceY = 20;
 {
     _xTitle = xTitle;
     
-    self.xTitleLB.text = xTitle;
+    UILabel *label = [UILabel new];
+    label.font = [UIFont systemFontOfSize:10];
+    label.textColor = [UIColor blackColor];
+    label.textAlignment = NSTextAlignmentCenter;
+    label.text = xTitle;
+    [label sizeToFit];
+    [self addSubview:label];
+    label.center = (CGPoint){self.frame.size.width /2.0 ,self.frame.size.height - 10};
 
 }
+
+-(void)setYLeftTitle:(NSString *)yLeftTitle
+{
+    _yLeftTitle = yLeftTitle;
+    
+    UILabel *label = [UILabel new];
+    label.font = [UIFont systemFontOfSize:10];
+    label.textColor = [UIColor blackColor];
+    label.textAlignment = NSTextAlignmentCenter;
+    label.text = yLeftTitle;
+    label.numberOfLines = yLeftTitle.length;
+    [label sizeToFit];
+    [self addSubview:label];
+    label.center = (CGPoint){10,self.frame.size.height/2.0};
+    
+}
+
+-(void)setYRightTitle:(NSString *)yRightTitle
+{
+    _yRightTitle = yRightTitle;
+    
+    UILabel *label = [UILabel new];
+    label.font = [UIFont systemFontOfSize:10];
+    label.textColor = [UIColor blackColor];
+    label.textAlignment = NSTextAlignmentCenter;
+    label.text = yRightTitle;
+    label.numberOfLines = yRightTitle.length;
+    [label sizeToFit];
+    [self addSubview:label];
+    label.center = (CGPoint){self.frame.size.width - 10,self.frame.size.height/2.0};
+}
+
+
 
 - (void)setXDataArray:(NSArray<NSString *> *)xDataArray {
 
@@ -274,18 +310,14 @@ static CGFloat bounceY = 20;
         UILabel * labelYdivision = [[UILabel alloc]initWithFrame:CGRectMake(0, (self.frame.size.height - 2 * bounceY)/self.rowCount *i + bounceY, bounceX, bounceY/2.0)];
         labelYdivision.tag = LeftLBTag + i;
         labelYdivision.textAlignment = NSTextAlignmentCenter;
-        if (i == self.rowCount)
-        {
-            labelYdivision.text = @"11111";
-        }else
-            labelYdivision.text = [NSString stringWithFormat:@"%.1f",(self.rowCount - i)*100.0];
+        labelYdivision.text = [NSString stringWithFormat:@"%.1f",(self.rowCount - i)*100.0];
         
         labelYdivision.font = [UIFont systemFontOfSize:10];
         [self addSubview:labelYdivision];
     }
 }
 
-//设置左边Y轴设计
+//填充左边的Y
 -(void)setYLeftDataArray:(NSArray<NSString *> *)yLeftDataArray
 {
 
@@ -310,25 +342,21 @@ static CGFloat bounceY = 20;
 
 - (void)createRightLabelY
 {
-    
+    //创建右边的Y
     for (NSInteger i = 0; i <= self.rowCount; i++) {
         
         UILabel * labelYdivision = [[UILabel alloc]initWithFrame:CGRectMake((self.frame.size.width - 2*bounceX)+bounceX/2.0,
                                                                             (self.frame.size.height - 2 * bounceY)/self.rowCount *i + bounceY,
                                                                             bounceX, bounceY/2.0)];
         labelYdivision.tag = RightLBTag + i;
-        labelYdivision.textAlignment = NSTextAlignmentCenter;
-//        if (i == self.rowCount)
-//        {
-//            labelYdivision.text = @"11111";
-//        }else
-            labelYdivision.text = [NSString stringWithFormat:@"%.1f",(self.rowCount - i)*100.0];
+        labelYdivision.textAlignment = NSTextAlignmentCenter;            labelYdivision.text = [NSString stringWithFormat:@"%.1f",(self.rowCount - i)*100.0];
         
         labelYdivision.font = [UIFont systemFontOfSize:10];
         [self addSubview:labelYdivision];
     }
 }
 
+//填充右边的Y
 -(void)setYRightDataArray:(NSArray<NSString *> *)yRightDataArray
 {
     _yRightDataArray = [yRightDataArray copy];
@@ -349,7 +377,8 @@ static CGFloat bounceY = 20;
 }
 
 #pragma mark 渐变的颜色
-- (void)drawGradientLayer {
+- (void)drawGradientLayer
+{
 
 //    /** 创建并设置渐变背景图层（不包含坐标轴） */
     self.gradientLayer = [CAGradientLayer layer];
@@ -400,43 +429,5 @@ static CGFloat bounceY = 20;
     NSLog(@"停止~~~~~~~~");
 }
 
-#pragma mark - getter
--(UILabel *)xTitleLB
-{
-    if (!_xTitleLB)
-    {
-        UILabel *label = [UILabel new];
-        label.font = [UIFont systemFontOfSize:10];
-        label.textColor = [UIColor blackColor];
-        [self addSubview:label];
-        _xTitleLB = label;
-    }
-    return _xTitleLB;
-}
 
--(UILabel *)yLeftTitleLB
-{
-    if (!_yLeftTitleLB)
-    {
-        UILabel *label = [UILabel new];
-        label.font = [UIFont systemFontOfSize:10];
-        label.textColor = [UIColor blackColor];
-        [self addSubview:label];
-        _yLeftTitleLB = label;
-    }
-    return _yLeftTitleLB;
-}
-
--(UILabel *)yRightTitleLB
-{
-    if (!_yRightTitleLB)
-    {
-        UILabel *label = [UILabel new];
-        label.font = [UIFont systemFontOfSize:10];
-        label.textColor = [UIColor blackColor];
-        [self addSubview:label];
-        _yRightTitleLB = label;
-    }
-    return _yRightTitleLB;
-}
 @end

@@ -36,11 +36,11 @@
     _lineView.xDataArray = xDataArray;
     _lineView.yLeftDataArray = yDataArray;
     _lineView.xTitle = @"底部展示(元)";
-    _lineView.yLeftTitle = @"左边展示(元)";
+    _lineView.yLeftTitle = @"左\n边\n展\n示\n(元)";
     
     //右边数据
-    _lineView.yLeftDataArray = yDataArray;
-    _lineView.yRightTitle = @"右边展示(元)";
+    _lineView.yRightDataArray = yDataArray;
+    _lineView.yRightTitle = @"右\n边\n展\n示\n(元)";
     //尝试采用两条线
     NSMutableArray *mutiArr = [@[] mutableCopy];
     for (int i = 0; i<3; i++)
