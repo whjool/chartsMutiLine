@@ -35,14 +35,14 @@ static CGFloat bounceY = 20;
     if (self = [super initWithFrame:frame]) {
 
         self.backgroundColor = [UIColor whiteColor];
-        self.columCount = columCount;
-        self.rowCount = rowCount;
+        self.columCount = columCount;//纵向的数据
+        self.rowCount = rowCount;   //横向的数据
         
         [self createLabelX];
         [self createLabelY];
         [self drawGradientLayer];
-        [self setHorLineDash];
-//        [self setVerLineDash];
+        [self setHorLineDash];  //横向虚线绘制
+        [self setVerLineDash];  //
         
     }
     return self;
@@ -67,7 +67,7 @@ static CGFloat bounceY = 20;
 #pragma mark 添加横向虚线
 - (void)setHorLineDash{
 
-    for (NSInteger i = 1;i <= self.rowCount+3; i++ ) {
+    for (NSInteger i = 0;i <= self.rowCount; i++ ) {
         
         UILabel * label1 = (UILabel*)[self viewWithTag:2000 + i];
         
@@ -98,13 +98,18 @@ static CGFloat bounceY = 20;
         [path addLineToPoint:CGPointMake(label1.frame.origin.x - bounceX,self.frame.size.height - 2*bounceY)];
         
         CAShapeLayer * dashLayer = [CAShapeLayer layer];
-        dashLayer.strokeColor = [UIColor yellowColor].CGColor;
+        dashLayer.strokeColor = [UIColor blackColor].CGColor;
         dashLayer.fillColor = [[UIColor clearColor] CGColor];
         // 默认设置路径宽度为0，使其在起始状态下不显示
         dashLayer.lineWidth = 0.6;
+        //设置虚线
         NSArray *dash = @[@3,@2];
-        dashLayer.path = path.CGPath;
         dashLayer.lineDashPattern = dash;
+        //设置实线
+        dashLayer.lineDashPattern = nil;
+        
+        dashLayer.path = path.CGPath;
+        
         [self.gradientLayer addSublayer:dashLayer];
     }
 }
@@ -223,7 +228,7 @@ static CGFloat bounceY = 20;
         UILabel * LabelMonth = [[UILabel alloc]initWithFrame:CGRectMake((self.frame.size.width - 2*bounceX)/self.columCount * i + bounceX, self.frame.size.height - bounceY + bounceY*0.3, (self.frame.size.width - 2*bounceX)/self.columCount- 2, bounceY/2)];
         LabelMonth.tag = 1000 + i;
         LabelMonth.font = [UIFont systemFontOfSize:10];
-        LabelMonth.transform = CGAffineTransformMakeRotation(M_PI * 0.1);
+//        LabelMonth.transform = CGAffineTransformMakeRotation(M_PI * 0.1);//不做旋转
         [self addSubview:LabelMonth];
     }
 }
@@ -249,7 +254,7 @@ static CGFloat bounceY = 20;
         labelYdivision.textAlignment = NSTextAlignmentCenter;
         if (i == self.rowCount)
         {
-            labelYdivision.text = @"";
+            labelYdivision.text = @"11111";
         }else
             labelYdivision.text = [NSString stringWithFormat:@"%.1f",(self.rowCount - i)*100.0];
         labelYdivision.font = [UIFont systemFontOfSize:10];
@@ -257,7 +262,9 @@ static CGFloat bounceY = 20;
     }
 }
 
-- (void)setyLeftDataArray:(NSArray<NSString *> *)yLeftDataArray {
+//设置左边Y轴设计
+-(void)setYLeftDataArray:(NSArray<NSString *> *)yLeftDataArray
+{
 
     _yLeftDataArray = [yLeftDataArray copy];
     
@@ -271,6 +278,11 @@ static CGFloat bounceY = 20;
         }
         
     }
+}
+
+-(void)setYRightDataArray:(NSArray<NSString *> *)yRightDataArray
+{
+    
 }
 
 #pragma mark 渐变的颜色
