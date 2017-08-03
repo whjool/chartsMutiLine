@@ -12,7 +12,7 @@
 #define LeftLBTag 2000
 #define RightLBTag 2500
 #define ChartYRate 1.2/2.0
-
+#define YCommonMargin 10
 @interface LineChartView ()<CAAnimationDelegate>
 
 @property (nonatomic) int columCount;
@@ -64,17 +64,17 @@ static CGFloat bounceY = 60;
     
     /*******画出坐标轴********/
     CGFloat XMagin = bounceX;
-    CGFloat YMagin = bounceY*ChartYRate;
+    CGFloat YMagin = bounceY*ChartYRate ;
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSetLineWidth(context, 1.0);
     CGContextSetRGBStrokeColor(context, 0, 0, 0, 1);//坐标轴背景颜色
-    CGContextMoveToPoint(context, bounceX, bounceY);                        //原点
+    CGContextMoveToPoint(context, bounceX, bounceY-YCommonMargin);                        //原点
     CGContextAddLineToPoint(context, XMagin, rect.size.height - YMagin);  //Y
     //获取最长的label的数据
     UILabel * label1 = (UILabel*)[self viewWithTag:XLBTag + self.columCount- 1];
     CGFloat centerX = label1.frame.origin.x;
     CGContextAddLineToPoint(context,centerX, rect.size.height - YMagin);//X轴
-    CGContextMoveToPoint(context, centerX , bounceY);
+    CGContextMoveToPoint(context, centerX , bounceY-YCommonMargin);
     CGContextAddLineToPoint(context,centerX , rect.size.height - YMagin);//右侧Y轴
     CGContextStrokePath(context);
 }
@@ -89,7 +89,7 @@ static CGFloat bounceY = 60;
         if (i != self.rowCount)
         {
             UILabel * label1 = (UILabel*)[self viewWithTag:LeftLBTag + i];
-            CGFloat YMagin = bounceY*ChartYRate;
+            CGFloat YMagin = bounceY*ChartYRate + YCommonMargin;
             UIBezierPath * path = [[UIBezierPath alloc]init];
             [path moveToPoint:CGPointMake(0, label1.frame.origin.y - YMagin)];
             [path addLineToPoint:CGPointMake(centerX - bounceX,label1.frame.origin.y - YMagin)];
@@ -117,7 +117,7 @@ static CGFloat bounceY = 60;
             CGFloat YMagin = bounceY*ChartYRate+bounceY;
             //垂直
             UIBezierPath * path = [[UIBezierPath alloc]init];
-            [path moveToPoint:CGPointMake(label1.frame.origin.x - XMagin, 0)];
+            [path moveToPoint:CGPointMake(label1.frame.origin.x - XMagin, -YCommonMargin)];
             [path addLineToPoint:CGPointMake(label1.frame.origin.x - XMagin,self.frame.size.height - YMagin)];
             
             CAShapeLayer * dashLayer = [CAShapeLayer layer];
@@ -314,12 +314,15 @@ static CGFloat bounceY = 60;
 
 #pragma mark 创建左边Y
 - (void)createLeftLabelY{
+    CGFloat marginY = bounceY*ChartYRate;
+    CGFloat totalH = self.frame.size.height - marginY - bounceY +YCommonMargin;
+    CGFloat sperateH = (totalH)/self.rowCount;
     
     for (NSInteger i = 0; i <= self.rowCount; i++) {
         
         UILabel * labelYdivision = [[UILabel alloc]initWithFrame:CGRectMake(0,
-                                                                            (self.frame.size.height - 2 * bounceY)/self.rowCount *i + bounceY*ChartYRate
-                                                                            , bounceX, bounceY/2.0)];
+                                                                            sperateH *i + marginY,
+                                                                            bounceX, bounceY/2.0)];
         labelYdivision.tag = LeftLBTag + i;
         labelYdivision.textAlignment = NSTextAlignmentCenter;
         labelYdivision.text = [NSString stringWithFormat:@"%.1f",(self.rowCount - i)*100.0];
@@ -354,11 +357,14 @@ static CGFloat bounceY = 60;
 
 - (void)createRightLabelY
 {
+    CGFloat marginY = bounceY*ChartYRate;
+    CGFloat totalH = self.frame.size.height - marginY - bounceY +YCommonMargin;
+    CGFloat sperateH = (totalH)/self.rowCount;
     //创建右边的Y
     for (NSInteger i = 0; i <= self.rowCount; i++) {
         
         UILabel * labelYdivision = [[UILabel alloc]initWithFrame:CGRectMake((self.frame.size.width - 2*bounceX)+bounceX/2.0,
-                                                                            (self.frame.size.height - 2 * bounceY)/self.rowCount *i + bounceY*ChartYRate,
+                                                                            sperateH *i + marginY,
                                                                             bounceX, bounceY/2.0)];
         labelYdivision.tag = RightLBTag + i;
         labelYdivision.textAlignment = NSTextAlignmentCenter;            labelYdivision.text = [NSString stringWithFormat:@"%.1f",(self.rowCount - i)*100.0];
