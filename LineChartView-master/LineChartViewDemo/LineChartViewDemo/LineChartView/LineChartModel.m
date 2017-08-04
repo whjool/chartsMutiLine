@@ -2,7 +2,7 @@
 //  LineChartModel.m
 //  LineChartViewDemo
 //
-//  Created by hun on 2017/8/4.
+//  Created by hundred on 2017/7/11.
 //  Copyright © 2017年 LFX. All rights reserved.
 //
 

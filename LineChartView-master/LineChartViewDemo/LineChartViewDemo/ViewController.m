@@ -2,7 +2,7 @@
 //  ViewController.m
 //  LineChartViewDemo
 //
-//  Created by 鱼米app on 2017/7/11.
+//  Created by hundred on 2017/7/11.
 //  Copyright © 2017年 LFX. All rights reserved.
 //
 
@@ -28,29 +28,45 @@
         [dateArr addObject:[NSString stringWithFormat:@"%d",i]];
     }
     NSArray *xDataArray = dateArr;
-//    NSArray *xDataArray = @[@"周一",@"周二",@"周三",@"周四",@"周五",@"周六",@"周日"];
-    NSArray *yDataArray = @[@"100",@"200",@"300",@"400",@"500",@"600",@"700",@"800"];
+    
+    //需要传入纵轴数目,和横轴数目
     _lineView = [[LineChartView alloc]initWithFrame:CGRectMake(0, 150, self.view.frame.size.width, 280)
                                      withColumCount:(int)xDataArray.count
-                                           rowCount:(int)yDataArray.count];
+                                           rowCount:8];
+    NSMutableArray *itemArr = [@[] mutableCopy];
+    for (int i =0; i<12; i++)
+    {
+        [itemArr addObject:@(arc4random_uniform(650))];
+    }
+#if 1
+    LineChartModel *model = [LineChartModel new];
+    model.xDataArray = xDataArray;
+    model.bottomTitle = @"底部展示(元)";
+    model.leftTitle = @"左\n边\n展\n示\n(元)";
+    model.rightTitle = @"右\n边\n展\n示\n(元)";
+    //根据上述已经创建Y轴数目进行填充
+    //左边填充
+    model.dataArray = @[@(69),@(376),@(500),@(789),@(456),@(650),@(310),@(990),@(890),@(560)];
+    //根据右边填充
+    model.dataRightArray = itemArr;
+    _lineView.model = model;
+#else
     _lineView.xDataArray = xDataArray;
-//    _lineView.yLeftDataArray = yDataArray;
     _lineView.xTitle = @"底部展示(元)";
     _lineView.yLeftTitle = @"左\n边\n展\n示\n(元)";
     
     //右边数据
 //    _lineView.yRightDataArray = yDataArray;
     _lineView.yRightTitle = @"右\n边\n展\n示\n(元)";
-
-    
-    
-    NSMutableArray *itemArr = [@[] mutableCopy];
-    for (int i =0; i<12; i++)
-    {
-        [itemArr addObject:@(arc4random_uniform(650))];
-    }
+    //左边填充
     _lineView.dataArray = @[@(69),@(376),@(500),@(789),@(456),@(650),@(310),@(990),@(890),@(560)];
+    //根据右边填充
     _lineView.dataRightArray = itemArr;
+#endif
+    
+    
+    
+    
     
     [self.view addSubview:_lineView];
     
