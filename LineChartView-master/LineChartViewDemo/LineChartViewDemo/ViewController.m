@@ -34,27 +34,21 @@
                                      withColumCount:(int)xDataArray.count
                                            rowCount:(int)yDataArray.count];
     _lineView.xDataArray = xDataArray;
-    _lineView.yLeftDataArray = yDataArray;
+//    _lineView.yLeftDataArray = yDataArray;
     _lineView.xTitle = @"底部展示(元)";
     _lineView.yLeftTitle = @"左\n边\n展\n示\n(元)";
     
     //右边数据
-    _lineView.yRightDataArray = yDataArray;
+//    _lineView.yRightDataArray = yDataArray;
     _lineView.yRightTitle = @"右\n边\n展\n示\n(元)";
-    //尝试采用两条线
-    NSMutableArray *mutiArr = [@[] mutableCopy];
-    for (int i = 0; i<3; i++)
+
+    NSMutableArray *itemArr = [@[] mutableCopy];
+    for (int i =0; i<12; i++)
     {
-        NSMutableArray *itemArr = [@[] mutableCopy];
-        for (int i =0; i<12; i++)
-        {
-            [itemArr addObject:@(arc4random_uniform(650))];
-        }
-        [mutiArr addObject:itemArr];
+        [itemArr addObject:@(arc4random_uniform(650))];
     }
-//    _lineView.dataArray = mutiArr;
-    
-    _lineView.dataArray = @[@(69),@(376),@(500),@(789),@(456),@(650),@(310)];
+    _lineView.dataArray = @[@(69),@(376),@(500),@(789),@(456),@(650),@(310),@(990),@(890),@(560)];
+    _lineView.dataRightArray = itemArr;
     
     [self.view addSubview:_lineView];
     

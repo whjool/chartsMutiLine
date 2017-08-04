@@ -14,6 +14,7 @@
 		73734D6E1F1461F2005D54C0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 73734D6D1F1461F2005D54C0 /* Assets.xcassets */; };
 		73734D711F1461F2005D54C0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 73734D6F1F1461F2005D54C0 /* LaunchScreen.storyboard */; };
 		73734D7C1F146238005D54C0 /* LineChartView.m in Sources */ = {isa = PBXBuildFile; fileRef = 73734D7B1F146238005D54C0 /* LineChartView.m */; };
+		B186ABCE1F341D1700878E7A /* LineChartModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B186ABCD1F341D1700878E7A /* LineChartModel.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +30,8 @@
 		73734D721F1461F2005D54C0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		73734D7A1F146238005D54C0 /* LineChartView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LineChartView.h; sourceTree = "<group>"; };
 		73734D7B1F146238005D54C0 /* LineChartView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LineChartView.m; sourceTree = "<group>"; };
+		B186ABCC1F341D1700878E7A /* LineChartModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LineChartModel.h; sourceTree = "<group>"; };
+		B186ABCD1F341D1700878E7A /* LineChartModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LineChartModel.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,6 +91,8 @@
 			children = (
 				73734D7A1F146238005D54C0 /* LineChartView.h */,
 				73734D7B1F146238005D54C0 /* LineChartView.m */,
+				B186ABCC1F341D1700878E7A /* LineChartModel.h */,
+				B186ABCD1F341D1700878E7A /* LineChartModel.m */,
 			);
 			path = LineChartView;
 			sourceTree = "<group>";
@@ -167,6 +172,7 @@
 				73734D691F1461F2005D54C0 /* ViewController.m in Sources */,
 				73734D661F1461F2005D54C0 /* AppDelegate.m in Sources */,
 				73734D631F1461F2005D54C0 /* main.m in Sources */,
+				B186ABCE1F341D1700878E7A /* LineChartModel.m in Sources */,
 				73734D7C1F146238005D54C0 /* LineChartView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -326,6 +332,7 @@
 				73734D771F1461F2005D54C0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
