@@ -42,6 +42,8 @@
 //    _lineView.yRightDataArray = yDataArray;
     _lineView.yRightTitle = @"右\n边\n展\n示\n(元)";
 
+    
+    
     NSMutableArray *itemArr = [@[] mutableCopy];
     for (int i =0; i<12; i++)
     {
